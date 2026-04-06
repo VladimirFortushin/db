@@ -7,14 +7,14 @@
 После этого откройте phpMyAdmin для взаимодействия с базами данных путем нажатия кнопки Admin службы MySQL.
 В открывшемся в браузере приложении в верхнем левом углу нажмите «Создать БД». Введите название базы данных и нажмите «Далее».
 Теперь в созданной БД выберите пункт SQL и скопируйте в него скрипты создания таблиц базы и их наполнения: 
-
+```
 CREATE TABLE Vehicle (
 	maker VARCHAR(100) NOT NULL,
 	model VARCHAR(100) NOT NULL,
 	type VARCHAR(20) NOT NULL CHECK (type IN ('Car', 'Motorcycle', 'Bicycle')),
 	PRIMARY KEY (model)
 );
- 
+ ```
 -- Создание таблицы Car
  
 CREATE TABLE Car (
