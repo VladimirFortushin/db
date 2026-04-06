@@ -14,7 +14,7 @@ CREATE TABLE Vehicle (
 	type VARCHAR(20) NOT NULL CHECK (type IN ('Car', 'Motorcycle', 'Bicycle')),
 	PRIMARY KEY (model)
 );
- ```
+
 -- Создание таблицы Car
  
 CREATE TABLE Car (
@@ -393,17 +393,18 @@ INSERT INTO Tasks (TaskID, TaskName, AssignedTo, ProjectID) VALUES
 (13, 'Задача 13: Проведение анализа конкурентов', 9, 2),
 (14, 'Задача 14: Создание презентации для клиентов', 4, 1),
 (15, 'Задача 15: Обновление сайта', 6, 3);
-
+```
 Транспортные средства
 ----------------
 Задача 1
 Найдите производителей (maker) и модели всех мотоциклов, которые имеют мощность более 150 лошадиных сил, стоят менее 20 тысяч долларов и являются спортивными (тип Sport). Также отсортируйте результаты по мощности в порядке убывания.
-
+```
 select v.maker, v.model 
 from Vehicle v 
 join motorcycle m on m.model = v.model 
 where m.horsepower > 150 and m.price < 20000 and m.type = 'Sport' 
 order by m.horsepower desc;
+```
 ----------------
 Задача 2
 Найти информацию о производителях и моделях различных типов транспортных средств (автомобили, мотоциклы и велосипеды), которые соответствуют заданным критериям.
@@ -426,7 +427,7 @@ order by m.horsepower desc;
 Количество передач больше 18.
 Цену менее 4 тысяч долларов.
 В выводе должны быть указаны производитель (maker), номер модели (model), а также NULL для мощности и объема двигателя, так как эти характеристики не применимы для велосипедов. Тип транспортного средства будет обозначен как Bicycle.
-
+```
 select v.maker, c.model, c.horsepower, c.engine_capacity, v.type 
 from Vehicle v 
 join Car c on c.model = v.model 
@@ -442,12 +443,12 @@ from Vehicle v
 join Bicycle b on b.model = v.model 
 where b.gear_count > 18 and b.price < 4000
 order by horsepower desc;
-
+```
 Автомобильные гонки
 ----------------
 Задача 1
 Определить, какие автомобили из каждого класса имеют наименьшую среднюю позицию в гонках, и вывести информацию о каждом таком автомобиле для данного класса, включая его класс, среднюю позицию и количество гонок, в которых он участвовал. Также отсортировать результаты по средней позиции.
-
+```
 With avgPosition as (
 Select c.name, c.class, avg(r.position) as avg_pos, count(r.race) as races_cnt 
 from Cars c 
@@ -461,11 +462,12 @@ group by class
 )
 Select ap.name, ap.class, ap.avg_pos, ap.races_cnt from avgPosition ap
 Join minAvgPosition map on ap.class = map.class and ap.avg_pos = map.min_avg_pos
-Order by ap.avg_pos, ap.name; 
+Order by ap.avg_pos, ap.name;
+```
 ----------------
 Задача 2
 Определить автомобиль, который имеет наименьшую среднюю позицию в гонках среди всех автомобилей, и вывести информацию об этом автомобиле, включая его класс, среднюю позицию, количество гонок, в которых он участвовал, и страну производства класса автомобиля. Если несколько автомобилей имеют одинаковую наименьшую среднюю позицию, выбрать один из них по алфавиту (по имени автомобиля).
-
+```
 With avgPosition as (
 	Select c.name, c.class, avg(r.position) as avg_pos, count(r.race) as race_cnt
 from Cars c 
@@ -476,11 +478,12 @@ Select ap.name, ap.class, min(ap.avg_pos) as min_avg_pos, ap.race_cnt, cl.countr
 	From avgPosition ap
 	Join Classes cl on cl.class = ap.class
 Order by min_avg_pos, ap.name;
+```
 ----------------
 Задача 3
 
 Определить классы автомобилей, которые имеют наименьшую среднюю позицию в гонках, и вывести информацию о каждом автомобиле из этих классов, включая его имя, среднюю позицию, количество гонок, в которых он участвовал, страну производства класса автомобиля, а также общее количество гонок, в которых участвовали автомобили этих классов. Если несколько классов имеют одинаковую среднюю позицию, выбрать все из них.
-
+```
 With avgPosition as (
 	Select c.name, c.class, avg(r.position) as avg_pos, count(r.race) as race_cnt
 from Cars c 
@@ -495,10 +498,11 @@ Select ap.name, ap.class, ap.avg_pos, ap.race_cnt, cl.country
 	Join Classes cl on cl.class = ap.class
 	Where ap.avg_pos = (select min_avg_pos from minAvg)
 Order by ap.avg_pos, ap.name;
+```
 ----------------
 Задача 4
 Определить, какие автомобили имеют среднюю позицию лучше (меньше) средней позиции всех автомобилей в своем классе (то есть автомобилей в классе должно быть минимум два, чтобы выбрать один из них). Вывести информацию об этих автомобилях, включая их имя, класс, среднюю позицию, количество гонок, в которых они участвовали, и страну производства класса автомобиля. Также отсортировать результаты по классу и затем по средней позиции в порядке возрастания.
-
+```
 With carAvg as 
 ( 
 Select c.name, c.class, avg(r.position) as car_avg_pos, count(r.race) as race_count 
@@ -516,6 +520,7 @@ From carAvg ca join classAvg cla on ca.class = cla.class
 Join Classes cl on ca.class = cl.class 
 Where ca.car_avg_pos < cla.class_avg_pos 
 Order by ca.class, ca.car_avg_pos;
+```
 ----------------
 Задача 5
 Определить, какие классы автомобилей имеют наибольшее количество автомобилей с низкой средней позицией (больше 3.0) и вывести информацию о каждом автомобиле из этих классов, включая его имя, класс, среднюю позицию, количество гонок, в которых он участвовал, страну производства класса автомобиля, а также общее количество гонок для каждого класса. Отсортировать результаты по количеству автомобилей с низкой средней позицией.
@@ -525,7 +530,7 @@ Order by ca.class, ca.car_avg_pos;
 ----------------
 Задача 1
 Определить, какие клиенты сделали более двух бронирований в разных отелях, и вывести информацию о каждом таком клиенте, включая его имя, электронную почту, телефон, общее количество бронирований, а также список отелей, в которых они бронировали номера (объединенные в одно поле через запятую). Также подсчитать среднюю длительность их пребывания (в днях) по всем бронированиям. Отсортировать результаты по количеству бронирований в порядке убывания.
-
+```
 Select c.name, c.email, c.phone, count(b.ID_booking) as total_bookings,
 Group_concat(distinct h.name separator ', ') as hotels, avg(datediff(b.check_out_date, b.check_in_date)) as avg_stay_days
 from Customer c
@@ -535,6 +540,7 @@ join Hotel h on r.ID_hotel = h.ID_hotel
 group by c.ID_customer, c.name, c.email, c.phone
 having count(b.ID_booking) > 2 and count(distinct h.ID_hotel) > 1
 order by total_bookings desc;
+```
 ----------------
 Задача 2
 Необходимо провести анализ клиентов, которые сделали более двух бронирований в разных отелях и потратили более 500 долларов на свои бронирования. Для этого:
@@ -543,7 +549,7 @@ order by total_bookings desc;
 •	В результате объединить данные из первых двух пунктов, чтобы получить список клиентов, которые соответствуют условиям обоих запросов. Отобразить поля: ID_customer, имя, общее количество бронирований, общую сумму, потраченную на бронирования, и общее количество уникальных отелей.
 •	Результаты отсортировать по общей сумме, потраченной клиентами, в порядке возрастания.
 
-
+```
 with client_stats as (
     select c.ID_customer, c.name, count(b.ID_booking) as total_bookings, count(distinct h.ID_hotel) AS total_hotels,
         sum(r.price) as total_spent
@@ -567,6 +573,7 @@ Select f.ID_customer, f.name, f.total_bookings, f.total_spent, f.total_hotels
 From frequent_clients f
 Join big_spenders b on f.ID_customer = b.ID_customer
 Order by f.total_spent asc;
+```
 ----------------
 Задача 3
 Вам необходимо провести анализ данных о бронированиях в отелях и определить предпочтения клиентов по типу отелей. Для этого выполните следующие шаги:
@@ -588,7 +595,7 @@ o	preferred_hotel_type: предпочитаемый тип отеля.
 o	visited_hotels: список уникальных отелей, которые посетил клиент.
 4.	Сортировка результатов. 
 Отсортируйте клиентов так, чтобы сначала шли клиенты с «дешевыми» отелями, затем со «средними» и в конце — с «дорогими».
-
+```
 with hotel_category as (
     select h.ID_hotel, h.name, avg(r.price) as avg_price,
  CASE
@@ -629,7 +636,7 @@ order by
         when has_medium = 1 and has_expensive = 0 then 2
         else 3
     END;
-    
+```
 Структура организации
 ----------------
 Задача 1
@@ -647,7 +654,7 @@ order by
 •	Для каждого сотрудника отобразить информацию из всех таблиц.
 •	Результаты должны быть отсортированы по имени сотрудника.
 •	Решение задачи должно представлять из себя один sql-запрос и задействовать ключевое слово RECURSIVE.
-
+```
 with recursive subordinates as (
 select e.EmployeeID, e.Name, e.ManagerID, e.DepartmentID, e.RoleID
 from Employees e
@@ -676,6 +683,7 @@ left join Roles r on s.RoleID = r.RoleID
 left join employee_projects ep on s.EmployeeID = ep.EmployeeID
 left join employee_tasks et on s.EmployeeID = et.EmployeeID
 order by s.Name;
+```
 ----------------
 Задача 2
 Найти всех сотрудников, подчиняющихся Ивану Иванову с EmployeeID = 1, включая их подчиненных и подчиненных подчиненных, а также самого Ивана Иванова. Для каждого сотрудника вывести следующую информацию:
@@ -689,7 +697,7 @@ order by s.Name;
 8.	Общее количество задач, назначенных этому сотруднику.
 9.	Общее количество подчиненных у каждого сотрудника (не включая подчиненных их подчиненных).
 10.	Если у сотрудника нет назначенных проектов или задач, отобразить NULL.
-
+```
 With recursive subordinates as (
 select e.EmployeeID, e.Name, e.ManagerID, e.DepartmentID, e.RoleID
 from Employees e
@@ -726,6 +734,7 @@ left join employee_projects ep on s.EmployeeID = ep.EmployeeID
 left join employee_tasks et on s.EmployeeID = et.EmployeeID
 left join employee_subordinates_count esc on s.EmployeeID = esc.EmployeeID
 order by s.Name;
+```
 ----------------
 Задача 3
 Найти всех сотрудников, которые занимают роль менеджера и имеют подчиненных (то есть число подчиненных больше 0). Для каждого такого сотрудника вывести следующую информацию:
@@ -738,7 +747,7 @@ order by s.Name;
 7.	Название задач, назначенных этому сотруднику (если есть, конкатенированные в одном столбце).
 8.	Общее количество подчиненных у каждого сотрудника (включая их подчиненных).
 9.	Если у сотрудника нет назначенных проектов или задач, отобразить NULL.
-
+```
 With recursive hierarchy as (
 Select e.EmployeeID as manager_id, e.EmployeeID AS subordinate_id
 From Employees e
@@ -774,6 +783,6 @@ left join employee_projects ep on e.EmployeeID = ep.EmployeeID
 left join employee_tasks et on e.EmployeeID = et.EmployeeID
 where r.RoleName = 'Менеджер' and sc.TotalSubordinates > 0 
 order by e.Name;
-
+```
 
 
